@@ -1,6 +1,6 @@
 var restify = require('restify');
 var builder = require('botbuilder');
-var game = require('./game');
+var c4game = require('./game');
 
 require('dotenv').config({silent: true});
 
@@ -29,6 +29,7 @@ bot.dialog('/', intents);
 intents.onDefault([
     function (session) {
         session.send("Hi there, welcome to c4bot.");
+        // session.beginDialog('/new');
         builder.Prompts.choice(session, "New game or Help?", "new|help");
     },
     function (session, results) {
@@ -48,7 +49,8 @@ bot.dialog('/help', [
 bot.dialog('/new', [
     function (session) {
         session.send("Game started...");
-        session.userData.game = new game.Game();
+        var game = new c4game.Game();
+        session.userData.gameState = game.gameState;
         session.beginDialog("/move");
     }
 ]);
@@ -58,23 +60,35 @@ bot.dialog('/move', [
         builder.Prompts.number(session, "Which column?");
     },
     function (session, results) {
-        session.userData.game.action(results.response, function () {
-            that.ai(-1);
-        });
+        var game = new c4game.Game();
+        // restore state
+        game.gameState = session.userData.gameState;
 
-        var canvasStr = session.userData.game.canvas.toDataURL();
-        console.log(canvasStr);
+        // resume game
+        game.gameState.paused = false;
 
+        // do action
+        game.action(results.response, function () {
+            this.ai.bind(this)(-1);
+        }.bind(game));
+        
+        // save state
+        session.userData.gameState = game.gameState;
+
+
+        // print image
+        var canvasStr = game.canvas.toDataURL();
         var msg = new builder.Message(session)
             .attachments([{
                 contentType: "image/png",
                 contentUrl: canvasStr
             }]);
+        session.send(msg);
         
-        if (!session.userData.game.won) {
+        // next move
+        if (!session.userData.gameState.won) {
             session.replaceDialog("/move");
         }
-        
     }
 ]);
 bot.dialog('/end', [

@@ -4,7 +4,6 @@ Connect Four chatbot.
 
 ## TODO
 
-- modify game.js, so that the game methods not depending on class state
-  - game state shall be tracked separately, and should be serializable in JSON.stringify
-  - Current issue: if stringify whole Game class, circular dependency is found.
-- then modify app.js
+- ending game and then starting again, breaks the game (after "won", unclear dialog path)
+- better "flow" of bot
+- ask choice of columns, instead of asking the column index

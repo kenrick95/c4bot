@@ -3,50 +3,50 @@ var Canvas = require('canvas');
 
 module.exports = {
     Game: function() {
-        this.map = [];
-        this.paused = false;
-        this.won = false;
-        this.rejectClick = false;
-        this.move = 0;
-        this.aiHistory = [];
+        this.gameState = {
+            map: [],
+            paused: false,
+            won: false,
+            rejectAction: false,
+            move: 0,
+            initOnceDone: false,
+        }
 
-        this.initOnceDone = false;
         /**
          * Only initalize once for these functions, can prevent race condition
          */
         this.initOnce = function () {
-            if (this.initOnceDone) {
+            if (this.gameState.initOnceDone) {
                 return false;
             }
 
-            this.canvas = new Canvas(480, 320);
+            this.canvas = new Canvas(640, 480);
             this.context = this.canvas.getContext('2d');
-            this.initOnceDone = true;
+            this.gameState.initOnceDone = true;
         };
 
         this.init = function () {
-            this.map = [];
-            this.paused = false;
-            this.won = false;
-            this.rejectClick = false;
-            this.move = 0;
-            this.aiHistory = [];
+            this.gameState.map = [];
+            this.gameState.paused = false;
+            this.gameState.won = false;
+            this.gameState.rejectAction = false;
+            this.gameState.move = 0;
             this.initOnce();
 
             var i, j;
             for (i = 0; i <= 6; i++) {
-                this.map[i] = [];
+                this.gameState.map[i] = [];
                 for (j = 0; j <= 7; j++) {
-                    this.map[i][j] = 0;
+                    this.gameState.map[i][j] = 0;
                 }
             }
-            this.clear();
+            this.clearMap();
             this.drawMask();
             this.print();
         };
 
         this.playerMove = function () {
-            if (this.move % 2 === 0) {
+            if (this.gameState.move % 2 === 0) {
                 return 1;
             }
             return -1;
@@ -55,22 +55,11 @@ module.exports = {
         this.print = function () {
             var i, j, msg;
             msg = "\n";
-            msg += "Move: " + this.move;
+            msg += "Move: " + this.gameState.move;
             msg += "\n";
             for (i = 0; i < 6; i++) {
                 for (j = 0; j < 7; j++) {
-                    msg += " " + this.map[i][j];
-                }
-                msg += "\n";
-            }
-            console.log(msg);
-        };
-
-        this.printState = function (state) {
-            var i, j, msg = "\n";
-            for (i = 0; i < 6; i++) {
-                for (j = 0; j < 7; j++) {
-                    msg += " " + state[i][j];
+                    msg += " " + this.gameState.map[i][j];
                 }
                 msg += "\n";
             }
@@ -78,22 +67,21 @@ module.exports = {
         };
 
         this.win = function (player) {
-            if (this.won) {
+            if (this.gameState.won) {
                 return false;
             }
-            this.paused = true;
-            this.won = true;
-            this.rejectClick = false;
+            this.gameState.paused = true;
+            this.gameState.won = true;
+            this.gameState.rejectAction = false;
             var msg = null;
             if (player > 0) {
-                msg = "Player 1 wins";
+                msg = "You win";
             } else if (player < 0) {
-                msg = "Player 2 wins";
+                msg = "Computer wins";
             } else {
                 msg = "It's a draw";
             }
-            alert(msg);
-            msg += " - Click to reset";
+            msg += " - Thanks for playing";
             this.context.save();
             this.context.font = '14pt sans-serif';
             this.context.fillStyle = "#111";
@@ -126,17 +114,17 @@ module.exports = {
         };
 
         this.action = function (column, callback) {
-            if (this.paused || this.won) {
+            if (this.gameState.paused || this.gameState.won) {
                 return 0;
             }
-            if (this.map[0][column] !== 0 || column < 0 || column > 6) {
+            if (this.gameState.map[0][column] !== 0 || column < 0 || column > 6) {
                 return -1;
             }
 
             var done = false;
             var row = 0, i;
             for (i = 0; i < 5; i++) {
-                if (this.map[i + 1][column] !== 0) {
+                if (this.gameState.map[i + 1][column] !== 0) {
                     done = true;
                     row = i;
                     break;
@@ -145,15 +133,13 @@ module.exports = {
             if (!done) {
                 row = 5;
             }
-            this.animate(column, this.playerMove(this.move), row, 0, function () {
-                this.map[row][column] = this.playerMove(this.move);
-                this.move++;
-                this.draw();
-                this.check();
-                this.print();
-                callback();
-            }.bind(this));
-            this.paused = true;
+            this.gameState.map[row][column] = this.playerMove(this.gameState.move);
+            this.gameState.move++;
+            this.drawMap();
+            this.check();
+            this.print();
+            callback();
+            this.gameState.paused = true;
             return 1;
         };
 
@@ -169,21 +155,21 @@ module.exports = {
                     for (k = 0; k <= 3; k++) {
                         //from (i,j) to right
                         if (j + k < 7) {
-                            temp_r += this.map[i][j + k];
+                            temp_r += this.gameState.map[i][j + k];
                         }
                         //from (i,j) to bottom
                         if (i + k < 6) {
-                            temp_b += this.map[i + k][j];
+                            temp_b += this.gameState.map[i + k][j];
                         }
 
                         //from (i,j) to bottom-right
                         if (i + k < 6 && j + k < 7) {
-                            temp_br += this.map[i + k][j + k];
+                            temp_br += this.gameState.map[i + k][j + k];
                         }
 
                         //from (i,j) to top-right
                         if (i - k >= 0 && j + k < 7) {
-                            temp_tr += this.map[i - k][j + k];
+                            temp_tr += this.gameState.map[i - k][j + k];
                         }
                     }
                     if (Math.abs(temp_r) === 4) {
@@ -199,7 +185,7 @@ module.exports = {
                 }
             }
             // check if draw
-            if ((this.move === 42) && (!this.won)) {
+            if ((this.gameState.move === 42) && (!this.gameState.won)) {
                 this.win(0);
             }
         };
@@ -233,62 +219,32 @@ module.exports = {
             this.context.restore();
         };
 
-        this.draw = function () {
+        this.drawMap = function () {
             var x, y;
             var fg_color;
             for (y = 0; y < 6; y++) {
                 for (x = 0; x < 7; x++) {
                     fg_color = "transparent";
-                    if (this.map[y][x] >= 1) {
+                    if (this.gameState.map[y][x] >= 1) {
                         fg_color = "#ff4136";
-                    } else if (this.map[y][x] <= -1) {
+                    } else if (this.gameState.map[y][x] <= -1) {
                         fg_color = "#0074d9";
                     }
                     this.drawCircle(75 * x + 100, 75 * y + 50, 25, fg_color, "black");
                 }
             }
         };
-        this.clear = function () {
-            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        };
-        this.animate = function (column, move, to_row, cur_pos, callback) {
-            var fg_color = "transparent";
-            if (move >= 1) {
-                fg_color = "#ff4136";
-            } else if (move <= -1) {
-                fg_color = "#0074d9";
-            }
-            if (to_row * 75 >= cur_pos) {
-                this.clear();
-                this.draw();
-                this.drawCircle(75 * column + 100, cur_pos + 50, 25, fg_color, "black");
-                this.drawMask();
-                window.requestAnimationFrame(function () {
-                    this.animate(column, move, to_row, cur_pos + 25, callback);
-                }.bind(this));
-            } else {
-                callback();
-            }
-        };
-
-        this.onregion = function (coord, x, radius) {
-            if ((coord[0] - x) * (coord[0] - x) <= radius * radius) {
-                return true;
-            }
-            return false;
-        };
-        this.oncircle = function (coord, centerCoord, radius) {
-            if ((coord[0] - centerCoord[0]) * (coord[0] - centerCoord[0]) <= radius * radius
-                    && (coord[1] - centerCoord[1]) * (coord[1] - centerCoord[1]) <= radius * radius) {
-                return true;
-            }
-            return false;
+        this.clearMap = function () {
+            this.context.save();
+            this.context.fillStyle = "#fff";
+            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.restore();
         };
 
         this.ai = function (aiMoveValue) {
             var choice = null;
 
-            var state = this.map.clone();
+            var state = this.gameState.map.clone();
             function checkState(state) {
 
                 var winVal = 0;
@@ -374,9 +330,9 @@ module.exports = {
                 }
 
                 if (depth % 2 === 0) {
-                    return minState(state, depth + 1, alpha, beta);
+                    return minState.bind(this)(state, depth + 1, alpha, beta);
                 }
-                return maxState(state, depth + 1, alpha, beta);
+                return maxState.bind(this)(state, depth + 1, alpha, beta);
 
             }
             function choose(choice) {
@@ -393,7 +349,7 @@ module.exports = {
                     tempState = this.fillMap(state, j, aiMoveValue);
                     if (tempState !== -1) {
 
-                        tempVal = value(tempState, depth, alpha, beta);
+                        tempVal = value.bind(this)(tempState, depth, alpha, beta);
                         if (tempVal[0] > v) {
                             v = tempVal[0];
                             move = j;
@@ -427,7 +383,7 @@ module.exports = {
                     tempState = this.fillMap(state, j, aiMoveValue * -1);
                     if (tempState !== -1) {
 
-                        tempVal = value(tempState, depth, alpha, beta);
+                        tempVal = value.bind(this)(tempState, depth, alpha, beta);
                         if (tempVal[0] < v) {
                             v = tempVal[0];
                             move = j;
@@ -449,14 +405,14 @@ module.exports = {
 
                 return [v, move];
             }
-            var choice_val = maxState(state, 0, -100000000007, 100000000007);
+            var choice_val = maxState.bind(this)(state, 0, -100000000007, 100000000007);
             choice = choice_val[1];
             var val = choice_val[0];
             console.info("AI " + aiMoveValue + " choose column: " + choice + " (value: " + val + ")");
 
-            this.paused = false;
+            this.gameState.paused = false;
             var done = this.action(choice, function () {
-                this.rejectClick = false;
+                this.gameState.rejectAction = false;
             }.bind(this));
 
             // if fail, then random
@@ -464,7 +420,7 @@ module.exports = {
                 console.error("Falling back to random agent");
                 choice = Math.floor(Math.random() * 7);
                 done = this.action(choice, function () {
-                    this.rejectClick = false;
+                    this.gameState.rejectAction = false;
                 }.bind(this));
             }
 
