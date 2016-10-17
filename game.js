@@ -10,6 +10,7 @@ module.exports = {
             rejectAction: false,
             move: 0,
             initOnceDone: false,
+            wonPlayer: 0
         }
 
         /**
@@ -42,7 +43,7 @@ module.exports = {
             }
             this.clearMap();
             this.drawMask();
-            this.print();
+            // this.print();
         };
 
         this.playerMove = function () {
@@ -70,6 +71,7 @@ module.exports = {
             if (this.gameState.won) {
                 return false;
             }
+            this.gameState.wonPlayer = player;
             this.gameState.paused = true;
             this.gameState.won = true;
             this.gameState.rejectAction = false;
@@ -137,7 +139,7 @@ module.exports = {
             this.gameState.move++;
             this.drawMap();
             this.check();
-            this.print();
+            // this.print();
             callback();
             this.gameState.paused = true;
             return 1;
