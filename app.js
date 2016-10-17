@@ -57,19 +57,39 @@ bot.dialog('/new', [
         session.send("Game started...");
         var game = new c4game.Game();
         session.userData.gameState = game.gameState;
+        session.send(canvasToMessage(session, game.canvas, 0));
         session.beginDialog("/move");
     },
     function (session) {
-        session.send("Game over. Thank you for playing.");
+        var wonPlayer = session.userData.gameState.wonPlayer;
+        var msg = "It's a draw";
+        if (wonPlayer > 0) {
+            msg = "You won!";
+        } else if (wonPlayer < 0) {
+            msg = "Computer won!";
+        }
+
+        session.send(msg + "\nGame over. Thank you for playing.");
         session.endDialog();
+    }
+]);
+bot.dialog('/invalid', [
+    function (session) {
+        session.send("Invalid move, please choose another column.");
+        session.replaceDialog("/move");
     }
 ]);
 
 bot.dialog('/move', [
     function (session) {
-        builder.Prompts.number(session, "Which column?");
+        builder.Prompts.number(session, "Which column? (1-7)");
     },
     function (session, results) {
+        var choice = results.response - 1;
+        if (choice < 0 || choice > 6) {
+            session.replaceDialog("/invalid");
+        }
+
         var game = new c4game.Game();
         // restore state
         game.gameState = session.userData.gameState;
@@ -78,22 +98,23 @@ bot.dialog('/move', [
         game.gameState.paused = false;
 
         // do action
-        game.action(results.response, function () {
+        var valid = game.action(choice, function () {
+            // print state (after user move)
+            session.send(canvasToMessage(session, game.canvas, 1));
+            session.sendBatch();
+
             this.ai.bind(this)(-1);
+
+            // print state (after AI move)
+            session.send(canvasToMessage(session, game.canvas, -1));
         }.bind(game));
+
+        if (valid < 1) {
+            session.replaceDialog("/invalid");
+        }
         
         // save state
         session.userData.gameState = game.gameState;
-
-
-        // print image
-        var canvasStr = game.canvas.toDataURL();
-        var msg = new builder.Message(session)
-            .attachments([{
-                contentType: "image/png",
-                contentUrl: canvasStr
-            }]);
-        session.send(msg);
         
         // next move
         if (!session.userData.gameState.won) {
@@ -103,3 +124,12 @@ bot.dialog('/move', [
         }
     }
 ]);
+
+function canvasToMessage(session, canvas, player) {
+    return new builder.Message(session)
+        .text((player != 0) ? ((player > 0) ? "You moved" : "Computer moved") : "Waiting for your move")
+        .attachments([{
+            contentType: "image/png",
+            contentUrl: canvas.toDataURL()
+        }]);
+}
