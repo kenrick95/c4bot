@@ -1,5 +1,6 @@
-#!/bin/perl -w
+#! /bin/perl
 
+use warnings;
 use File::Basename;
 use Safe;
 
@@ -128,7 +129,7 @@ sub parse_entries {
 }
 
 sub version {
-    print "glib-mkenums version glib-2.26.1\n";
+    print "glib-mkenums version glib-2.28.8\n";
     print "glib-mkenums comes with ABSOLUTELY NO WARRANTY.\n";
     print "You may redistribute copies of glib-mkenums under the terms of\n";
     print "the GNU General Public License which can be found in the\n";
