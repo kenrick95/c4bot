@@ -1,0 +1,63 @@
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var msg = require('../Message');
+var kb = require('./Keyboard');
+var ThumbnailCard = (function (_super) {
+    __extends(ThumbnailCard, _super);
+    function ThumbnailCard(session) {
+        _super.call(this, session);
+        this.data.contentType = 'application/vnd.microsoft.card.thumbnail';
+    }
+    ThumbnailCard.prototype.title = function (text) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        if (text) {
+            this.data.content.title = msg.fmtText(this.session, text, args);
+        }
+        return this;
+    };
+    ThumbnailCard.prototype.subtitle = function (text) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        if (text) {
+            this.data.content.subtitle = msg.fmtText(this.session, text, args);
+        }
+        return this;
+    };
+    ThumbnailCard.prototype.text = function (text) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        if (text) {
+            this.data.content.text = msg.fmtText(this.session, text, args);
+        }
+        return this;
+    };
+    ThumbnailCard.prototype.images = function (list) {
+        this.data.content.images = [];
+        if (list) {
+            for (var i = 0; i < list.length; i++) {
+                var image = list[i];
+                this.data.content.images.push(image.toImage ? image.toImage() : image);
+            }
+        }
+        return this;
+    };
+    ThumbnailCard.prototype.tap = function (action) {
+        if (action) {
+            this.data.content.tap = action.toAction ? action.toAction() : action;
+        }
+        return this;
+    };
+    return ThumbnailCard;
+}(kb.Keyboard));
+exports.ThumbnailCard = ThumbnailCard;
