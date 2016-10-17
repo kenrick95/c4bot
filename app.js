@@ -24,16 +24,13 @@ server.post('/c4bot/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector);
 var intents = new builder.IntentDialog();
-bot.dialog('/', intents);
-
-intents.onDefault([
+bot.dialog('/', [
     function (session) {
-        session.send("Hi there, welcome to c4bot.");
-        // session.beginDialog('/new');
-        builder.Prompts.choice(session, "New game or Help?", "new|help");
+        session.send("Hi there, welcome to c4bot, a bot that plays Connect Four game with you.");
+        builder.Prompts.choice(session, "What would you like to do?", "New game|Help");
     },
     function (session, results) {
-        if (results.response && results.response.entity != 'help') {
+        if (results.response && results.response.entity.toLowerCase() != 'help') {
             session.beginDialog('/new');
         } else {
             session.beginDialog('/help');
@@ -43,7 +40,16 @@ intents.onDefault([
 
 bot.dialog('/help', [
     function (session) {
-        session.send("If you don't know how to play, read Wikipedia lolz.");
+        session.send("This bot will play a Connect Four game with you.");
+        var msg = new builder.Message(session)
+            .text("A GIF worth a thousand words.")
+            .attachments([{
+                contentType: "image/gif",
+                contentUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Connect_Four.gif"
+            }]);
+        session.send(msg);
+        session.send("If you encounter any issue, please report it at my GitHub repo: https://github.com/kenrick95/c4bot/issues");
+        session.endDialog();
     }
 ]);
 bot.dialog('/new', [
@@ -52,6 +58,10 @@ bot.dialog('/new', [
         var game = new c4game.Game();
         session.userData.gameState = game.gameState;
         session.beginDialog("/move");
+    },
+    function (session) {
+        session.send("Game over. Thank you for playing.");
+        session.endDialog();
     }
 ]);
 
@@ -88,11 +98,8 @@ bot.dialog('/move', [
         // next move
         if (!session.userData.gameState.won) {
             session.replaceDialog("/move");
+        } else {
+            session.endDialog();
         }
-    }
-]);
-bot.dialog('/end', [
-    function (session) {
-        session.send("Game ended...");
     }
 ]);
