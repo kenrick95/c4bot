@@ -75,14 +75,14 @@ bot.dialog('/new', [
 ]);
 bot.dialog('/invalid', [
     function (session) {
-        session.send("Invalid move, please choose another column.");
+        session.send("Invalid move, please choose another column");
         session.replaceDialog("/move");
     }
 ]);
 
 bot.dialog('/move', [
     function (session) {
-        builder.Prompts.number(session, "Which column? (1-7)");
+        builder.Prompts.number(session, "Please choose a column (1-7)");
     },
     function (session, results) {
         var choice = results.response - 1;
@@ -103,10 +103,13 @@ bot.dialog('/move', [
             session.send(canvasToMessage(session, game.canvas, 1));
             session.sendBatch();
 
-            this.ai.bind(this)(-1);
+            if (!game.gameState.won) {
+                this.ai.bind(this)(-1);
 
-            // print state (after AI move)
-            session.send(canvasToMessage(session, game.canvas, -1));
+                // print state (after AI move)
+                session.send(canvasToMessage(session, game.canvas, -1));
+            }
+            
         }.bind(game));
 
         if (valid < 1) {
@@ -127,7 +130,7 @@ bot.dialog('/move', [
 
 function canvasToMessage(session, canvas, player) {
     return new builder.Message(session)
-        .text((player != 0) ? ((player > 0) ? "You moved" : "Computer moved") : "Waiting for your move")
+        .text((player != 0) ? ((player > 0) ? "You moved ⚫️" : "Computer moved 🔵") : "Waiting for your move")
         .attachments([{
             contentType: "image/png",
             contentUrl: canvas.toDataURL()
