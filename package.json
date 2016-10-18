@@ -15,7 +15,7 @@
     "start": "node app.js"
   },
   "author": "Kenrick",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/kenrick95/c4bot.git"
