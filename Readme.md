@@ -1,7 +1,8 @@
 # c4bot
 
-Connect Four chatbot.
+A chat bot that plays Connect Four with you.
 
-## Demo
-- https://m.me/c4bot/
-- https://webchat.botframework.com/embed/c4bot?s=GX3pnNqwgXE.cwA.o-o.LiDbTlGJR0pD7dYJLwNpZPU5O5bgkZNJfrhQFEUUYrM
+Game ported from [c4 - Connect Four, with AI](https://github.com/kenrick95/c4).
+
+# Channels & Demo
+- https://bots.botframework.com/bot?id=c4bot
