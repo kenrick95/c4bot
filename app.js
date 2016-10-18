@@ -130,7 +130,7 @@ bot.dialog('/move', [
 
 function canvasToMessage(session, canvas, player) {
     return new builder.Message(session)
-        .text((player != 0) ? ((player > 0) ? "You moved ⚫️" : "Computer moved 🔵") : "Waiting for your move")
+        .text((player != 0) ? ((player > 0) ? "You moved 🔴" : "Computer moved 🔵") : "Waiting for your move")
         .attachments([{
             contentType: "image/png",
             contentUrl: canvas.toDataURL()
