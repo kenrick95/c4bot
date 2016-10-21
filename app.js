@@ -26,8 +26,10 @@ var bot = new builder.UniversalBot(connector);
 var intents = new builder.IntentDialog();
 bot.dialog('/', [
     function (session) {
-        session.send("Hi there, welcome to c4bot, a bot that plays Connect Four game with you.");
-        builder.Prompts.choice(session, "What would you like to do?", "New game|Help");
+        session.send("Hi there, I am c4bot, a bot that plays Connect Four game with you. Click here https://bots.botframework.com/bot?id=c4bot to find out more about me and my policies.");
+        builder.Prompts.choice(session, "What would you like to do?", "New game|Help", {
+            retryPrompt: "Sorry, I didn't understand that. \"New game\" or \"help\"?"
+        });
     },
     function (session, results) {
         if (results.response && results.response.entity.toLowerCase() != 'help') {
