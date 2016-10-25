@@ -78,15 +78,21 @@ bot.dialog('/new', [
     },
     function (session) {
         var wonPlayer = session.userData.gameState.wonPlayer;
-        var msg = "It's a draw";
-        if (wonPlayer > 0) {
-            msg = "You won!";
-        } else if (wonPlayer < 0) {
-            msg = "Computer won!";
+        var gameEnded = session.userData.gameState.won;
+
+        var msg = "";
+        if (gameEnded) {
+            msg = "It's a draw";
+            if (wonPlayer > 0) {
+                msg = "You won!";
+            } else if (wonPlayer < 0) {
+                msg = "Computer won!";
+            }
+            msg += "\n";
         }
 
-        session.send(msg + "\nGame over. Thank you for playing.");
-        session.endDialog();
+        session.send();
+        session.endDialog(msg + "Game over. Thank you for playing.\nSay 'hi' again to restart the game.");
     }
 ]);
 bot.dialog('/invalid', [
@@ -98,12 +104,18 @@ bot.dialog('/invalid', [
 
 bot.dialog('/move', [
     function (session) {
-        builder.Prompts.number(session, "Please choose a column (1-7)");
+        builder.Prompts.text(session, "Please choose a column (1-7)");
     },
     function (session, results) {
-        var choice = results.response - 1;
-        if (choice < 0 || choice > 6) {
+        if (/^(end|restart)/i.test(results.response)) {
+            session.endDialog();
+            return;
+        }
+
+        var choice = builder.EntityRecognizer.parseNumber(results.response) - 1;
+        if (isNaN(choice) || choice < 0 || choice > 6) {
             session.replaceDialog("/invalid");
+            return;
         }
 
         var game = new c4game.Game();
@@ -130,6 +142,7 @@ bot.dialog('/move', [
 
         if (valid < 1) {
             session.replaceDialog("/invalid");
+            return;
         }
         
         // save state
