@@ -24,7 +24,20 @@ server.post('/c4bot/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector);
 var intents = new builder.IntentDialog();
-bot.dialog('/', [
+
+bot.dialog('/', intents);
+
+intents.matches(/^(new|play|start)/i, [
+    function (session) {
+        session.beginDialog("/new");
+    }
+]);
+intents.matches(/^(help|how|guide)/i, [
+    function (session) {
+        session.beginDialog("/help");
+    }
+]);
+intents.onDefault([
     function (session) {
         session.send("Hi there, I am c4bot, a bot that plays Connect Four game with you. Click here https://bots.botframework.com/bot?id=c4bot to find out more about me and my policies.");
         builder.Prompts.choice(session, "What would you like to do?", "New game|Help", {
@@ -40,9 +53,10 @@ bot.dialog('/', [
     }
 ]);
 
+
 bot.dialog('/help', [
     function (session) {
-        session.send("This bot will play a Connect Four game with you.");
+        session.send("I will play a Connect Four game with you.");
         var msg = new builder.Message(session)
             .text("A GIF worth a thousand words.")
             .attachments([{
@@ -50,7 +64,7 @@ bot.dialog('/help', [
                 contentUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Connect_Four.gif"
             }]);
         session.send(msg);
-        session.send("If you encounter any issue, please report it at my GitHub repo: https://github.com/kenrick95/c4bot/issues");
+        session.send("If you encounter any issue, please report it to my GitHub repo: https://github.com/kenrick95/c4bot/issues");
         session.endDialog();
     }
 ]);
