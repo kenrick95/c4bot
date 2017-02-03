@@ -4,7 +4,7 @@
   "description": "Connect Four bot",
   "main": "app.js",
   "dependencies": {
-    "botbuilder": "^3.3.0",
+    "botbuilder": "^3.6.0",
     "canvas": "^1.5.0",
     "dotenv": "^2.0.0",
     "restify": "^4.1.1"
