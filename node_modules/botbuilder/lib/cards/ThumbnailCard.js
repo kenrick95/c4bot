@@ -4,13 +4,14 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var msg = require('../Message');
-var kb = require('./Keyboard');
+var Message_1 = require("../Message");
+var Keyboard_1 = require("./Keyboard");
 var ThumbnailCard = (function (_super) {
     __extends(ThumbnailCard, _super);
     function ThumbnailCard(session) {
-        _super.call(this, session);
-        this.data.contentType = 'application/vnd.microsoft.card.thumbnail';
+        var _this = _super.call(this, session) || this;
+        _this.data.contentType = 'application/vnd.microsoft.card.thumbnail';
+        return _this;
     }
     ThumbnailCard.prototype.title = function (text) {
         var args = [];
@@ -18,7 +19,7 @@ var ThumbnailCard = (function (_super) {
             args[_i - 1] = arguments[_i];
         }
         if (text) {
-            this.data.content.title = msg.fmtText(this.session, text, args);
+            this.data.content.title = Message_1.fmtText(this.session, text, args);
         }
         return this;
     };
@@ -28,7 +29,7 @@ var ThumbnailCard = (function (_super) {
             args[_i - 1] = arguments[_i];
         }
         if (text) {
-            this.data.content.subtitle = msg.fmtText(this.session, text, args);
+            this.data.content.subtitle = Message_1.fmtText(this.session, text, args);
         }
         return this;
     };
@@ -38,7 +39,7 @@ var ThumbnailCard = (function (_super) {
             args[_i - 1] = arguments[_i];
         }
         if (text) {
-            this.data.content.text = msg.fmtText(this.session, text, args);
+            this.data.content.text = Message_1.fmtText(this.session, text, args);
         }
         return this;
     };
@@ -59,5 +60,5 @@ var ThumbnailCard = (function (_super) {
         return this;
     };
     return ThumbnailCard;
-}(kb.Keyboard));
+}(Keyboard_1.Keyboard));
 exports.ThumbnailCard = ThumbnailCard;

@@ -4,20 +4,20 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var dlg = require('../dialogs/Dialog');
-var intent = require('../dialogs/IntentDialog');
+var Dialog_1 = require("../dialogs/Dialog");
+var IntentDialog_1 = require("../dialogs/IntentDialog");
 var CommandDialog = (function (_super) {
     __extends(CommandDialog, _super);
     function CommandDialog(serviceUri) {
-        _super.call(this);
+        var _this = _super.call(this) || this;
         console.warn('CommandDialog class is deprecated. Use IntentDialog class instead.');
-        this.dialog = new intent.IntentDialog();
+        _this.dialog = new IntentDialog_1.IntentDialog();
+        return _this;
     }
     CommandDialog.prototype.begin = function (session, args) {
         this.dialog.begin(session, args);
     };
     CommandDialog.prototype.replyReceived = function (session, recognizeResult) {
-        this.dialog.replyReceived(session, recognizeResult);
     };
     CommandDialog.prototype.dialogResumed = function (session, result) {
         this.dialog.dialogResumed(session, result);
@@ -42,5 +42,5 @@ var CommandDialog = (function (_super) {
         return this;
     };
     return CommandDialog;
-}(dlg.Dialog));
+}(Dialog_1.Dialog));
 exports.CommandDialog = CommandDialog;

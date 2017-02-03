@@ -13,10 +13,10 @@ var PATTERN = new RegExp('(\\W|^)' +
         '((?:domingo|dom|lunes|lun|martes|mar|mi[ée]rcoles|mie|jueves|jue|viernes|vie|s[áa]bado|sab))' +
         '\\s*\\,?\\s*' +
     ')?' +
-    '([0-9]{1,2})[\\/\\.\\-]([0-9]{1,2})' +
+    '([0-1]{0,1}[0-9]{1})[\\/\\.\\-]([0-3]{0,1}[0-9]{1})' +
     '(?:' +
         '[\\/\\.\\-]' +
-        '([0-9]{4}|[0-9]{2})' +
+        '([0-9]{4}\s*\,?\s*|[0-9]{2}\s*\,?\s*)' +
     ')?' +
     '(\\W|$)', 'i');
 
@@ -93,9 +93,9 @@ exports.Parser = function ESSlashDateFormatParser(argument) {
 
         if(year < 100){
             if(year > 50){
-                year = year + 2500 - 543; //BE
+                year = year + 1900;
             }else{
-                year = year + 2000; //AD
+                year = year + 2000;
             }
         }
 

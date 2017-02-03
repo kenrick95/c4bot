@@ -80,8 +80,10 @@ ParsedComponents.prototype.isCertain = function(component) {
 };
 
 ParsedComponents.prototype.isPossibleDate = function() {
-    
     var dateMoment = this.moment();
+    if (this.isCertain('timezoneOffset')) {
+        dateMoment.utcOffset(this.get('timezoneOffset'))
+    }
 
     if (dateMoment.get('year') != this.get('year')) return false;
     if (dateMoment.get('month') != this.get('month')-1) return false;
@@ -90,7 +92,7 @@ ParsedComponents.prototype.isPossibleDate = function() {
     if (dateMoment.get('minute') != this.get('minute')) return false;
 
     return true;
-}
+};
 
 ParsedComponents.prototype.date = function() {
     var dateMoment = this.moment();
@@ -117,7 +119,7 @@ ParsedComponents.prototype.moment = function() {
     dateMoment.add(-adjustTimezoneOffset, 'minutes');
 
     return dateMoment;
-}
+};
 
 
 

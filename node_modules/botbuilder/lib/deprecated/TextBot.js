@@ -1,6 +1,6 @@
 "use strict";
-var ub = require('../bots/UniversalBot');
-var cc = require('../bots/ConsoleConnector');
+var UniversalBot_1 = require("../bots/UniversalBot");
+var ConsoleConnector_1 = require("../bots/ConsoleConnector");
 var TextBot = (function () {
     function TextBot(options) {
         if (options === void 0) { options = {}; }
@@ -8,9 +8,6 @@ var TextBot = (function () {
         var oBot = {};
         for (var key in options) {
             switch (key) {
-                case 'localizer':
-                    oBot.localizer = options.localizer;
-                    break;
                 case 'defaultDialogId':
                     oBot.defaultDialogId = options.defaultDialogId;
                     break;
@@ -32,8 +29,8 @@ var TextBot = (function () {
                     throw new Error('TextBot custom stores no longer supported.');
             }
         }
-        this.connector = new cc.ConsoleConnector();
-        this.bot = new ub.UniversalBot(this.connector, oBot);
+        this.connector = new ConsoleConnector_1.ConsoleConnector();
+        this.bot = new UniversalBot_1.UniversalBot(this.connector, oBot);
     }
     TextBot.prototype.on = function (event, listener) {
         this.bot.on(event, listener);
