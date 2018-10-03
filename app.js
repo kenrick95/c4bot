@@ -1,8 +1,8 @@
 var restify = require('restify');
 var builder = require('botbuilder');
-var c4game = require('./game');
+var c4game = require('@kenrick95/c4');
 
-require('dotenv').config({silent: true});
+require('dotenv').config();
 
 //=========================================================
 // Bot Setup
@@ -71,6 +71,10 @@ bot.dialog('/help', [
 bot.dialog('/new', [
     function (session) {
         session.send("Game started...");
+        // const board = new Board(canvas)
+        // board.render()
+        // Game.initGameLocalAi()
+
         var game = new c4game.Game();
         session.userData.gameState = game.gameState;
         session.send(canvasToMessage(session, game.canvas, 0));
