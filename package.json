@@ -4,7 +4,7 @@
   "description": "Connect Four bot",
   "main": "app.js",
   "dependencies": {
-    "@kenrick95/c4": "^3.0.2",
+    "@kenrick95/c4": "^3.0.4",
     "botbuilder": "^3.15.0",
     "dotenv": "^2.0.0",
     "pureimage": "^0.1.6",

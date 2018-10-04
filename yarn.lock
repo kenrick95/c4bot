@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@kenrick95/c4@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@kenrick95/c4/-/c4-3.0.2.tgz#6f02fa5cc048f8ed4a975b051186735a2ff099df"
+"@kenrick95/c4@^3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@kenrick95/c4/-/c4-3.0.4.tgz#828092e051623884459498aff44001cc1e9f8e40"
   dependencies:
     es6-promise "^4.2.5"
 
